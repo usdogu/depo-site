@@ -8,6 +8,9 @@ export const handler: Handlers = {
     const msgsByCategory = messages.filter((msg) =>
       msg.hashtags.includes(`#${category}`)
     );
+    if (msgsByCategory.length === 0) {
+      return ctx.renderNotFound();
+    }
     return ctx.render(msgsByCategory);
   },
 };
