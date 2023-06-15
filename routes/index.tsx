@@ -1,4 +1,3 @@
-import { Head } from "$fresh/runtime.ts";
 import { hashtags } from "@/utils/messages.ts";
 import { Handlers } from "$fresh/server.ts";
 
@@ -16,9 +15,6 @@ export const handler: Handlers = {
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Karışık Depo</title>
-      </Head>
       <div class="p-4 mx-auto max-w-screen-md">
         <form class="grid content-center">
           <select
@@ -30,7 +26,7 @@ export default function Home() {
               <option value={hashtag}>{hashtag}</option>
             ))}
           </select>
-          <button type="submit">Seç</button>
+          <button class="text-sm text-white py-3" type="submit">Seç</button>
         </form>
       </div>
     </>
