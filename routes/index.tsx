@@ -15,7 +15,7 @@ export const handler: Handlers = {
 export default function Home() {
   return (
     <>
-      <div class="p-4 mx-auto max-w-screen-md">
+      <div class="container p-4 mx-auto ">
         <form class="grid content-center">
           <select
             name="hashtag"

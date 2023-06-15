@@ -7,7 +7,7 @@ export default function App({ Component }: AppProps) {
       <Head>
         <title>Karışık Depo</title>
       </Head>
-      <body class="bg-black">
+      <body class="bg-gray-50 dark:bg-gray-900">
         <Component />
       </body>
     </>
