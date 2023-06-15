@@ -9,7 +9,6 @@ export const handler: Handlers = {
     if (query === "") {
       return ctx.render();
     }
-    console.log(url.origin);
     return Response.redirect(`${url.origin}/categories/${query.slice(1)}`);
   },
 };
