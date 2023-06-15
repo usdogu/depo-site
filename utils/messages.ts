@@ -4,4 +4,4 @@ export interface Message {
   }
 
 export const messages = JSON.parse(Deno.readTextFileSync("data/messages.json")) as Message[];
-export const hashtags = [...new Set(messages.flatMap((m) => m.hashtags))];
+export const hashtags = [...new Set(messages.flatMap((m) => m.hashtags))].sort();
