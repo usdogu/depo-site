@@ -20,7 +20,7 @@ export default function Home() {
         <title>Karışık Depo</title>
       </Head>
       <div class="p-4 mx-auto max-w-screen-md">
-        <form>
+        <form class="grid content-center">
           <select
             name="hashtag"
             class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"

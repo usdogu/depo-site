@@ -1,6 +1,6 @@
 import { PageProps } from "$fresh/server.ts";
 import { Handlers } from "$fresh/server.ts";
-import { Message, messages } from "@/utils/messages.ts";
+import { Message, messages } from "@/utils/messages.ts"
 
 export const handler: Handlers = {
   GET(req, ctx) {
@@ -14,7 +14,7 @@ export const handler: Handlers = {
 
 export default function Category({ data }: PageProps<Message[]>) {
   return (
-    <div class="relative overflow-x-auto shadow-md">
+    <div class="relative overflow-x-auto shadow-md bg-black">
       <table class="table-auto border-collapse w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-900 dark:text-gray-400">
           <tr>
