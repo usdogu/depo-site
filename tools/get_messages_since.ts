@@ -1,11 +1,11 @@
 import { TelegramClient } from "npm:telegram";
 import { StringSession } from "npm:telegram/sessions/index.js";
 import { EntityLike } from "npm:telegram/define.d.ts";
-import { Message } from "@/utils/messages.ts";
+import { Message, messages } from "@/utils/messages.ts";
 
 const apiId = parseInt(Deno.env.get("API_ID")!);
 const apiHash = Deno.env.get("API_HASH")!;
-const stringSession = new StringSession(Deno.env.get("STRING_SESSION"));
+const stringSession = new StringSession(Deno.env.get("STRING_SESSION")!);
 
 function translateToASCII(msg: string): string {   
   const trchars = ["Ş", "Ç", "Ğ", "İ", "Ü", "Ö", "ş", "ç", "ğ", "ı", "ü", "ö"];
@@ -25,17 +25,26 @@ function translateToASCII(msg: string): string {
 async function getMessages(
   client: TelegramClient,
   channel: EntityLike,
-): Promise<Message[]> {
+  offsetId: number,
+): Promise<[Message[], number]> {
   const messages: Message[] = [];
-  for await (const message of client.iterMessages(channel, {})) {
+  const ids: number[] = []
+
+  for await (
+    const message of client.iterMessages(channel, {
+      offsetId: offsetId,
+      reverse: true,
+    })
+  ) {
     if (message.message !== undefined) {
       const parsedMessage = parseMessage(message.message);
       if (parsedMessage) {
         messages.push(parsedMessage);
+        ids.push(message.id);
       }
     }
   }
-  return messages;
+  return [messages, ids[ids.length - 1]];
 }
 
 function parseMessage(rawMsg: string): Message | null {
@@ -50,12 +59,12 @@ function parseMessage(rawMsg: string): Message | null {
 
   const hashtags = rawMsg.match(hashtagRegex);
   const hashtags_translated = (hashtags || []).map(translateToASCII);
+
   return {
     link: link[0],
     hashtags: hashtags_translated,
   };
 }
-
 
 (async () => {
   const client = new TelegramClient(stringSession, apiId, apiHash, {
@@ -72,12 +81,14 @@ function parseMessage(rawMsg: string): Message | null {
   });
 
   console.log("You should now be connected.");
-  console.log(client.session.save()); // Save this string to avoid logging in again
 
   const depo = await client.getEntity("karisikdepo");
-  const messages = await getMessages(client, depo);
-  await Deno.writeTextFile("data/messages.json", JSON.stringify(messages));
-
+  const last_id = parseInt(await Deno.readTextFile("data/last_id.txt"));
+  const [new_messages, new_last_id] = await getMessages(client, depo, last_id);
+  const messages_combined = [...new_messages, ...messages];
+  await Deno.writeTextFile("data/messages.json", JSON.stringify(messages_combined));
+  await Deno.writeTextFile("data/last_id.txt", new_last_id.toString(10));
+  
   console.log("Done");
   Deno.exit();
 })();
