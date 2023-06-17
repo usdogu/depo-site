@@ -87,7 +87,9 @@ function parseMessage(rawMsg: string): Message | null {
   const [new_messages, new_last_id] = await getMessages(client, depo, last_id);
   const messages_combined = [...new_messages, ...messages];
   await Deno.writeTextFile("data/messages.json", JSON.stringify(messages_combined));
-  await Deno.writeTextFile("data/last_id.txt", new_last_id.toString(10));
+  if (new_last_id !== undefined) {
+    await Deno.writeTextFile("data/last_id.txt", new_last_id.toString(10));
+  }
   
   console.log("Done");
   Deno.exit();
