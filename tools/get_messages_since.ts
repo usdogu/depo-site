@@ -7,20 +7,20 @@ const apiId = parseInt(Deno.env.get("API_ID")!);
 const apiHash = Deno.env.get("API_HASH")!;
 const stringSession = new StringSession(Deno.env.get("STRING_SESSION")!);
 
-function translateToASCII(msg: string): string {   
+function fixHashtags(msg: string): string {
+  msg = msg.toLocaleLowerCase("tr-TR");
   const trchars = ["Ş", "Ç", "Ğ", "İ", "Ü", "Ö", "ş", "ç", "ğ", "ı", "ü", "ö"];
   const enchars = ["S", "C", "G", "I", "U", "O", "s", "c", "g", "i", "u", "o"];
   const tmp = [];
   for (const char of msg) {
-     if (trchars.indexOf(char) == -1) {
-        tmp.push(char);
-     } else {
-        tmp.push(enchars[trchars.indexOf(char)]);
-     }
+    if (trchars.indexOf(char) == -1) {
+      tmp.push(char);
+    } else {
+      tmp.push(enchars[trchars.indexOf(char)]);
+    }
   }
   return tmp.join("");
 }
-
 
 async function getMessages(
   client: TelegramClient,
@@ -28,7 +28,7 @@ async function getMessages(
   offsetId: number,
 ): Promise<[Message[], number]> {
   const messages: Message[] = [];
-  const ids: number[] = []
+  const ids: number[] = [];
 
   for await (
     const message of client.iterMessages(channel, {
@@ -58,7 +58,7 @@ function parseMessage(rawMsg: string): Message | null {
   }
 
   const hashtags = rawMsg.match(hashtagRegex);
-  const hashtags_translated = (hashtags || []).map(translateToASCII);
+  const hashtags_translated = (hashtags || []).map(fixHashtags);
 
   return {
     link: link[0],
@@ -86,11 +86,14 @@ function parseMessage(rawMsg: string): Message | null {
   const last_id = parseInt(await Deno.readTextFile("data/last_id.txt"));
   const [new_messages, new_last_id] = await getMessages(client, depo, last_id);
   const messages_combined = [...new_messages, ...messages];
-  await Deno.writeTextFile("data/messages.json", JSON.stringify(messages_combined));
+  await Deno.writeTextFile(
+    "data/messages.json",
+    JSON.stringify(messages_combined),
+  );
   if (new_last_id !== undefined) {
     await Deno.writeTextFile("data/last_id.txt", new_last_id.toString(10));
   }
-  
+
   console.log("Done");
   Deno.exit();
 })();

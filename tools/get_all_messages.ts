@@ -7,20 +7,20 @@ const apiId = parseInt(Deno.env.get("API_ID")!);
 const apiHash = Deno.env.get("API_HASH")!;
 const stringSession = new StringSession(Deno.env.get("STRING_SESSION"));
 
-function translateToASCII(msg: string): string {   
+function fixHashtags(msg: string): string {
+  msg = msg.toLocaleLowerCase("tr-TR");
   const trchars = ["Ş", "Ç", "Ğ", "İ", "Ü", "Ö", "ş", "ç", "ğ", "ı", "ü", "ö"];
   const enchars = ["S", "C", "G", "I", "U", "O", "s", "c", "g", "i", "u", "o"];
   const tmp = [];
   for (const char of msg) {
-     if (trchars.indexOf(char) == -1) {
-        tmp.push(char);
-     } else {
-        tmp.push(enchars[trchars.indexOf(char)]);
-     }
+    if (trchars.indexOf(char) == -1) {
+      tmp.push(char);
+    } else {
+      tmp.push(enchars[trchars.indexOf(char)]);
+    }
   }
   return tmp.join("");
 }
-
 
 async function getMessages(
   client: TelegramClient,
@@ -49,13 +49,12 @@ function parseMessage(rawMsg: string): Message | null {
   }
 
   const hashtags = rawMsg.match(hashtagRegex);
-  const hashtags_translated = (hashtags || []).map(translateToASCII);
+  const hashtags_translated = (hashtags || []).map(fixHashtags);
   return {
     link: link[0],
     hashtags: hashtags_translated,
   };
 }
-
 
 (async () => {
   const client = new TelegramClient(stringSession, apiId, apiHash, {
