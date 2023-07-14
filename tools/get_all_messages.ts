@@ -1,7 +1,8 @@
-import { TelegramClient } from "npm:telegram";
-import { StringSession } from "npm:telegram/sessions/index.js";
-import { EntityLike } from "npm:telegram/define.d.ts";
+import { TelegramClient } from "grm/mod.ts";
+import { StringSession } from "grm/sessions/mod.ts";
+import { Api } from "grm/tl/api.d.ts";
 import { Message } from "@/utils/messages.ts";
+type EntityLike = Api.TypeEntityLike
 
 const apiId = parseInt(Deno.env.get("API_ID")!);
 const apiHash = Deno.env.get("API_HASH")!;
